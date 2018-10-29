@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using DSharpPlus;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
-using System.Threading;
 
 namespace DiscordBot
 {
