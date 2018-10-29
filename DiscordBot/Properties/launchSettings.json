@@ -1,8 +1,7 @@
 {
   "profiles": {
     "DiscordBot": {
-      "commandName": "Project",
-      "commandLineArgs": "NTA2NDU5NzkxNjg2NjMxNDI0.DridLQ.A9PTaRfsKve9FX8FkFOywT72SK8"
+      "commandName": "Project"
     }
   }
 }
