@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using DiscordBotCore.Common;
 
 namespace DiscordBot
 {
-    class Loger : IDisposable
+    class Loger : IDisposable, DiscordBotCore.Common.ILoger
     {
         public Loger(string Path)
         {

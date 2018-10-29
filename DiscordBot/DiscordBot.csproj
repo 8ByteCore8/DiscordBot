@@ -11,18 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Languages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Languages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Languages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Languages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <ProjectReference Include="..\DiscordBotCore\DiscordBotCore.csproj" />
   </ItemGroup>
 
 </Project>

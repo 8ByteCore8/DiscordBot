@@ -1,13 +1,12 @@
 ﻿using System;
-using DSharpPlus;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using DiscordBotCore;
 
 namespace DiscordBot
 {
     class Program
     {
-        static Loger Loger { get; set; } = new Loger($"Logs\\{DateTime.Now.ToShortDateString()} - {DateTime.Now.ToShortTimeString()}.log");
         static void Main(string[] args)
         {
             string token;
@@ -20,19 +19,10 @@ namespace DiscordBot
                 token = Console.ReadLine();
             }
 
-            Loger.Log($"Бот будет запущен по токену \"{token}\".");
-
-            DiscordClient discord = new DiscordClient(new DiscordConfiguration
-            {
-                Token = token,
-                TokenType = TokenType.Bot
-            });
-
-            discord.MessageCreated += Discord_MessageCreated;
-
-            discord.ConnectAsync().Wait();
-
-            Loger.Log($"Бот успешно подключён.");
+            var bot = new DiscordBotCore.DiscordBot(
+                token: token,
+                loger: new Loger($"Logs\\{DateTime.Now.ToShortDateString()} - {DateTime.Now.ToShortTimeString()}.log")
+                );
 
             while (true)
             {
