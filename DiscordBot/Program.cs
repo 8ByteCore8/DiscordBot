@@ -25,10 +25,7 @@ namespace DiscordBot
                 token = Console.ReadLine();
             }
 
-            DiscordBotCore.DiscordBot bot = new DiscordBotCore.DiscordBot(token)
-            {
-                Loger = new Loger($"Logs\\{DateTime.Now.ToShortDateString()} - {DateTime.Now.ToShortTimeString()}.log")
-            };
+            DiscordBotCore.DiscordBot bot = new DiscordBotCore.DiscordBot(token);
 
             while (true)
             {

@@ -1,0 +1,71 @@
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using DiscordBotCore.Common;
+
+namespace DiscordBotCore
+{
+    /// <summary>
+    /// Стандартный класс для логирования.
+    /// </summary>
+    public class DefaultLoger : IDisposable, ILoger
+    {
+        /// <summary>
+        /// Создаёт новый обьект класса.
+        /// </summary>
+        public DefaultLoger()
+        {
+            //путь к папке с логами
+            string logDir = $"{Assembly.GetExecutingAssembly().Location}\\Logs";
+
+            //проверка наличия папки, если нету создаём
+            if (!Directory.Exists(logDir))
+                Directory.CreateDirectory(logDir);
+
+            //открытие потока для записи логов
+            File = new FileStream($"{logDir}\\{DateTime.Now.ToShortDateString()}.log", FileMode.Create);
+            //создание помощника для записи в файл
+            LogWriter = new StreamWriter(File);
+        }
+
+        /// <summary>
+        /// Поток файла
+        /// </summary>
+        private FileStream File { get; }
+
+        /// <summary>
+        /// Помощник записи в поток.
+        /// </summary>
+        private StreamWriter LogWriter { get; }
+
+        public void Log(string LogText)
+        {
+            DateTime time = DateTime.Now;
+            string log = $"[{time.ToShortDateString()} | {time.ToShortTimeString()}] --- {LogText};";
+            Console.WriteLine(log);
+            LogWriter.WriteLine(log);
+        }
+
+        public Task LogAsync(string LogText)
+        {
+            return Task.Factory.StartNew(() => {
+                DateTime time = DateTime.Now;
+                string log = $"[{time.ToShortDateString()} | {time.ToShortTimeString()}] --- {LogText}";
+                Console.WriteLine(log);
+                LogWriter.WriteLine(log);
+            });
+        }
+
+        public void Dispose()
+        {
+            LogWriter.Dispose();
+            File.Dispose();
+        }
+
+        ~DefaultLoger()
+        {
+            Dispose();
+        }
+    }
+}
