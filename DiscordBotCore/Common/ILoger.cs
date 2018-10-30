@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
+using System;
 
 namespace DiscordBotCore.Common
 {
-    public interface ILoger
+    public interface ILoger : IDisposable
     {
-        void Dispose();
         void Log(string LogText);
         Task LogAsync(string LogText);
     }

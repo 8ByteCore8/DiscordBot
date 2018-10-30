@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
-using DiscordBotCore;
 
 namespace DiscordBot
 {
@@ -9,27 +8,37 @@ namespace DiscordBot
     {
         static void Main(string[] args)
         {
-            string token;
+            string token=null;
 
-            if (args[0] != null)
-                token = args[0];
-            else
+            foreach(string arg in args)
+            {
+                if (arg.StartsWith("token="))
+                {
+                    arg.Replace("token=", "");
+                    token = arg;
+                }
+            }
+
+            if (token == null)
             {
                 Console.WriteLine("Введите токен для бота:");
                 token = Console.ReadLine();
             }
 
-            var bot = new DiscordBotCore.DiscordBot(
-                token: token,
-                loger: new Loger($"Logs\\{DateTime.Now.ToShortDateString()} - {DateTime.Now.ToShortTimeString()}.log")
-                );
+            DiscordBotCore.DiscordBot bot = new DiscordBotCore.DiscordBot(token)
+            {
+                Loger = new Loger($"Logs\\{DateTime.Now.ToShortDateString()} - {DateTime.Now.ToShortTimeString()}.log")
+            };
 
             while (true)
             {
                 string command = Console.ReadLine().ToLower().Trim();
 
                 if (command == "exit")
+                {
+                    bot.Dispose();
                     break;
+                }
             }
         }
 

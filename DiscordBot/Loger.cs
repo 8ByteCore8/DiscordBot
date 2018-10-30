@@ -5,7 +5,7 @@ using DiscordBotCore.Common;
 
 namespace DiscordBot
 {
-    class Loger : IDisposable, DiscordBotCore.Common.ILoger
+    class Loger : IDisposable, ILoger
     {
         public Loger(string Path)
         {
