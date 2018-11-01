@@ -1,4 +1,7 @@
-﻿namespace DiscordBotCore.Common.Commands
+﻿using DSharpPlus;
+using DSharpPlus.EventArgs;
+
+namespace DiscordBotCore.Common.Commands
 {
     /// <summary>
     /// Команда которую исполняет бот.
@@ -13,6 +16,8 @@
         /// <summary>
         /// Действие команды.
         /// </summary>
-        void Execute();
+        void ExecuteAsConsole(DiscordClient client);
+
+        void ExecuteAsBot(MessageCreateEventArgs message);
     }
 }

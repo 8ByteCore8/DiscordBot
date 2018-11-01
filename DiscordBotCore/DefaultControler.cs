@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace DiscordBotCore
 {
@@ -48,18 +47,12 @@ namespace DiscordBotCore
             Commands = commands.ToArray();
         }
 
-        public ICommand Command => throw new NotImplementedException();
-
-        public void Execute() => Command.Execute();
-
-        public Task ExecuteAsync() => Task.Factory.StartNew(() => Command.Execute());
-
-        public void Parse(string text)
+        public ICommand Parse(string text, CommandType type)
         {
             Regex regex = new Regex(@"^(\S+)\s(\S+)((?:\s\S+)*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             if (!regex.IsMatch(text))
-                throw new InvalidCommandException($"Комманда {text} имела неверный формат.");
+                throw new ControlerException($"Комманда {text} имела неверный формат.");
 
             GroupCollection groupCollection = regex.Match(text).Groups;
 
@@ -73,17 +66,17 @@ namespace DiscordBotCore
                 command = (ICommand)Activator.CreateInstance(Commands.FirstOrDefault(x =>
                 {
                     CommandAttribute attribute = x.GetCustomAttribute<CommandAttribute>();
-                    return attribute.Module == module && attribute.Command == commandStr && attribute.Type.HasFlag(CommandType.Discord);
+                    return attribute.Module == module && attribute.Command == commandStr && attribute.Type.HasFlag(type);
                 }));
 
                 command.Args = args;
             }
             catch
             {
-                throw new Exception("Введена неизвестная команда.");
+                throw new ControlerException("Введена неизвестная команда.");
             }
 
-            command.Execute();
+            return command;
         }
     }
 }

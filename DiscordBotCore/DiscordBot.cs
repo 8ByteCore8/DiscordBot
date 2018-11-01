@@ -1,9 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using DiscordBotCore.Common;
+using DiscordBotCore.Common.Commands;
+using DiscordBotCore.Exceptions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using DiscordBotCore.Common;
-using DiscordBotCore.Common.Commands;
+using System;
+using System.Threading.Tasks;
 
 namespace DiscordBotCore
 {
@@ -21,6 +22,8 @@ namespace DiscordBotCore
         /// Логер текущего бота.
         /// </summary>
         public ILoger Loger { get; set; }
+
+        public IControler Controler { get; set; }
 
         /// <summary>
         /// Создаёт новый обьект бота.
@@ -76,10 +79,16 @@ namespace DiscordBotCore
             #endregion
 
             //подключение бота к серверу
-            discord.ConnectAsync().Wait();
+            try
+            {
+                discord.ConnectAsync().Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new BotException($"Не удалось подключиться к Дискорду.\nПодробности: {ex.Message}", ex);
+            }
 
-
-            Loger.Log($"Бот успешно подключён.");
+            Loger.Log($"Бот успешно подключён");
         }
 
         /// <summary>
@@ -102,10 +111,11 @@ namespace DiscordBotCore
 
                 text = text.Replace("!bot ", "");
 
-                IControler controler = new DefaultControler();
                 try
                 {
-                    controler.Parse(text);
+                    ICommand command = Controler.Parse(text, CommandType.Discord);
+
+                    command.ExecuteAsBot(e);
                 }
                 catch (Exception ex)
                 {
@@ -116,10 +126,10 @@ namespace DiscordBotCore
 
         public void Execute(string text)
         {
-            IControler controler = new DefaultControler();
             try
             {
-                controler.Parse(text);
+                ICommand command = Controler.Parse(text, CommandType.Console);
+                command.ExecuteAsConsole(DiscordClient);
             }
             catch (Exception ex)
             {

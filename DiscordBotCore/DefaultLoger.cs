@@ -1,8 +1,8 @@
-﻿using System;
+﻿using DiscordBotCore.Common;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using DiscordBotCore.Common;
 
 namespace DiscordBotCore
 {
@@ -49,7 +49,8 @@ namespace DiscordBotCore
 
         public Task LogAsync(string LogText)
         {
-            return Task.Factory.StartNew(() => {
+            return Task.Factory.StartNew(() =>
+            {
                 DateTime time = DateTime.Now;
                 string log = $"[{time.ToShortDateString()} | {time.ToShortTimeString()}] --- {LogText}";
                 Console.WriteLine(log);
