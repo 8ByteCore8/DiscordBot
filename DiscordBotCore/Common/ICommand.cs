@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 
-namespace DiscordBotCore.Common.Commands
+namespace DiscordBotCore.Common
 {
     /// <summary>
     /// Команда которую исполняет бот.
