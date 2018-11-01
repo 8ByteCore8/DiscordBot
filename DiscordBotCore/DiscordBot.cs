@@ -29,30 +29,37 @@ namespace DiscordBotCore
         /// Создаёт новый обьект бота.
         /// </summary>
         /// <param name="token">Токен для подключения.</param>
-        public DiscordBot(string token)
-        {
-            //проверка переданого токена
-            if (token == null) throw new ArgumentNullException(nameof(token));
+        //public DiscordBot(string token)
+        //{
+        //    //проверка переданого токена
+        //    if (token == null) throw new ArgumentNullException(nameof(token));
 
-            //установка стандартного логера
-            Loger = new DefaultLoger();
+        //    //установка стандартного логера
+        //    Loger = new DefaultLoger();
 
-            //вызов инициализатора
-            Init(token);
-        }
+        //    //вызов инициализатора
+        //    Init(token);
+        //}
 
         /// <summary>
         /// Создаёт новый обьект бота.
         /// </summary>
         /// <param name="token">Токен для подключения.</param>
         /// <param name="loger">Пользовательский класс для логирования.</param>
-        public DiscordBot(string token, ILoger loger)
+        public DiscordBot(string token, ILoger loger = null, IControler controler = null)
         {
-            //проверка переданого токена
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            if (token == null)
+                throw new ArgumentNullException(nameof(token));
 
-            //установка пользовательского логера
-            Loger = loger ?? throw new ArgumentNullException(nameof(loger));
+            if (loger == null)
+                Loger = new DefaultLoger();
+            else
+                Loger = loger;
+
+            if (controler == null)
+                Controler = new DefaultControler();
+            else
+                Controler = controler;
 
             //вызов инициализатора
             Init(token);
@@ -85,7 +92,7 @@ namespace DiscordBotCore
             }
             catch (Exception ex)
             {
-                throw new BotException($"Не удалось подключиться к Дискорду.\nПодробности: {ex.Message}", ex);
+                throw new BotException($"не удалось подключиться к дискорду.\nподробности: {ex.Message}", ex);
             }
 
             Loger.Log($"Бот успешно подключён");
