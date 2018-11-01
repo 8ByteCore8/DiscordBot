@@ -8,9 +8,9 @@ namespace DiscordBot
     {
         static void Main(string[] args)
         {
-            string token=null;
+            string token = null;
 
-            foreach(string arg in args)
+            foreach (string arg in args)
             {
                 if (arg.StartsWith("token="))
                 {
@@ -25,17 +25,29 @@ namespace DiscordBot
                 token = Console.ReadLine();
             }
 
-            DiscordBotCore.DiscordBot bot = new DiscordBotCore.DiscordBot(token);
-
-            while (true)
+            try
             {
-                string command = Console.ReadLine().ToLower().Trim();
+                DiscordBotCore.DiscordBot bot = new DiscordBotCore.DiscordBot(token);
 
-                if (command == "exit")
+                while (true)
                 {
-                    bot.Dispose();
-                    break;
+                    string command = Console.ReadLine().ToLower().Trim();
+
+                    if (command == "exit")
+                    {
+                        bot.Dispose();
+                        break;
+                    }
+                    else
+                    {
+                        bot.Execute(command);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
         }
 

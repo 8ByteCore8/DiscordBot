@@ -78,6 +78,7 @@ namespace DiscordBotCore
             //подключение бота к серверу
             discord.ConnectAsync().Wait();
 
+
             Loger.Log($"Бот успешно подключён.");
         }
 
@@ -96,21 +97,34 @@ namespace DiscordBotCore
             {
                 string text = e.Message.Content.Trim().ToLower();
 
-                if (!text.StartsWith("!bot")||e.Message.Author.IsBot)
+                if (!text.StartsWith("!bot") || e.Message.Author.IsBot)
                     return;
 
-                text = text.Replace("!bot ","");
+                text = text.Replace("!bot ", "");
 
                 IControler controler = new DefaultControler();
                 try
                 {
                     controler.Parse(text);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     e.Message.RespondAsync(ex.Message);
                 }
             });
+        }
+
+        public void Execute(string text)
+        {
+            IControler controler = new DefaultControler();
+            try
+            {
+                controler.Parse(text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
