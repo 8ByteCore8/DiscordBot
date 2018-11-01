@@ -20,7 +20,7 @@ namespace DiscordBotCore
         /// <summary>
         /// Логер текущего бота.
         /// </summary>
-        public ILoger Loger { get; set; } = new DefaultLoger();
+        public ILoger Loger { get; set; }
 
         /// <summary>
         /// Создаёт новый обьект бота.
@@ -94,7 +94,22 @@ namespace DiscordBotCore
         {
             return Task.Factory.StartNew(() =>
             {
+                string text = e.Message.Content.Trim().ToLower();
 
+                if (!text.StartsWith("!bot")||e.Message.Author.IsBot)
+                    return;
+
+                text = text.Replace("!bot ","");
+
+                IControler controler = new DefaultControler();
+                try
+                {
+                    controler.Parse(text);
+                }
+                catch(Exception ex)
+                {
+                    e.Message.RespondAsync(ex.Message);
+                }
             });
         }
 
@@ -103,8 +118,11 @@ namespace DiscordBotCore
         /// </summary>
         public void Dispose()
         {
-            DiscordClient.DisconnectAsync();
-            DiscordClient.Dispose();
+            if (DiscordClient != null)
+            {
+                DiscordClient.DisconnectAsync();
+                DiscordClient.Dispose();
+            }
 
             if (Loger != null)
                 Loger.Dispose();

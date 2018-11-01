@@ -1,9 +1,18 @@
 ﻿namespace DiscordBotCore.Common.Commands
 {
+    /// <summary>
+    /// Команда которую исполняет бот.
+    /// </summary>
     public interface ICommand
     {
-        string[] Args { get; }
-        string Command { get; }
-        string Module { get; }
+        /// <summary>
+        /// Аргументы команды.
+        /// </summary>
+        string[] Args { get; set; }
+
+        /// <summary>
+        /// Действие команды.
+        /// </summary>
+        void Execute();
     }
 }

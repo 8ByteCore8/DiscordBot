@@ -17,7 +17,7 @@ namespace DiscordBotCore
         public DefaultLoger()
         {
             //путь к папке с логами
-            string logDir = $"{Assembly.GetExecutingAssembly().Location}\\Logs";
+            string logDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Logs";
 
             //проверка наличия папки, если нету создаём
             if (!Directory.Exists(logDir))
