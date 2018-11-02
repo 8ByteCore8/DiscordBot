@@ -49,6 +49,8 @@ namespace DiscordBotCore
 
         public ICommand Parse(string text, CommandType type)
         {
+            Console.WriteLine($"Комманд {Commands.Length}");
+
             Regex regex = new Regex(@"^(\S+)\s(\S+)((?:\s\S+)*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             if (!regex.IsMatch(text))
@@ -56,27 +58,34 @@ namespace DiscordBotCore
 
             GroupCollection groupCollection = regex.Match(text).Groups;
 
-            string module = groupCollection[0].Value;
-            string commandStr = groupCollection[1].Value;
-            string[] args = groupCollection[2].Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string module = groupCollection[1].Value;
+            string commandStr = groupCollection[2].Value;
+            string[] args = groupCollection[3].Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             ICommand command;
             try
             {
+                Console.WriteLine(module);
+                Console.WriteLine(commandStr);
+
                 command = (ICommand)Activator.CreateInstance(Commands.FirstOrDefault(x =>
                 {
                     CommandAttribute attribute = x.GetCustomAttribute<CommandAttribute>();
+                    Console.WriteLine(attribute.Module);
+                    Console.WriteLine(attribute.Command);
+                    Console.WriteLine(attribute.Type.HasFlag(type));
+
                     return attribute.Module == module && attribute.Command == commandStr && attribute.Type.HasFlag(type);
                 }));
 
                 command.Args = args;
+
+                return command;
             }
             catch
             {
                 throw new ControlerException("Введена неизвестная команда.");
             }
-
-            return command;
         }
     }
 }
