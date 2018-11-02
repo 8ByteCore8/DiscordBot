@@ -1,6 +1,6 @@
-﻿using DiscordBotCore.Common;
-using DiscordBotCore.Common.Commands;
-using DiscordBotCore.Exceptions;
+﻿using DiscordBot.Common;
+using DiscordBot.Common.Commands;
+using DiscordBot.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace DiscordBotCore
+namespace DiscordBot
 {
     class DefaultControler : IControler
     {

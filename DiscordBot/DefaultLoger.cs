@@ -1,10 +1,10 @@
-﻿using DiscordBotCore.Common;
+﻿using DiscordBot.Common;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace DiscordBotCore
+namespace DiscordBot
 {
     /// <summary>
     /// Стандартный класс для логирования.

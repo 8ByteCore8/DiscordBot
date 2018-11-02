@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace DiscordBotCore.Common
+namespace DiscordBot.Common
 {
     /// <summary>
     /// Интерфейс логера

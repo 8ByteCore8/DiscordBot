@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DiscordBotCore.Exceptions
+namespace DiscordBot.Exceptions
 {
     class ControlerException : Exception
     {

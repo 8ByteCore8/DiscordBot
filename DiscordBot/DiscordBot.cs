@@ -1,12 +1,12 @@
-﻿using DiscordBotCore.Common;
-using DiscordBotCore.Common.Commands;
-using DiscordBotCore.Exceptions;
+﻿using DiscordBot.Common;
+using DiscordBot.Common.Commands;
+using DiscordBot.Exceptions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using System;
 using System.Threading.Tasks;
 
-namespace DiscordBotCore
+namespace DiscordBot
 {
     /// <summary>
     /// Основной класс бота.

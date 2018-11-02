@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DiscordBotCore.Common.Commands
+namespace DiscordBot.Common.Commands
 {
     [Flags]
     public enum CommandType : byte

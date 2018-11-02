@@ -1,6 +1,6 @@
-﻿using DiscordBotCore.Common.Commands;
+﻿using DiscordBot.Common.Commands;
 
-namespace DiscordBotCore.Common
+namespace DiscordBot.Common
 {
     /// <summary>
     /// Класс определяющий команду и исполняющий её.
