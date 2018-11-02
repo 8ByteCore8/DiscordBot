@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DiscordBot
 {
     /// <summary>
-    /// Стандартный класс для логирования.
+    /// Логер по умолчанию
     /// </summary>
     public class DefaultLoger : IDisposable, ILoger
     {
@@ -29,6 +29,11 @@ namespace DiscordBot
             LogWriter = new StreamWriter(File);
         }
 
+        ~DefaultLoger()
+        {
+            Dispose();
+        }
+
         /// <summary>
         /// Поток файла
         /// </summary>
@@ -38,6 +43,12 @@ namespace DiscordBot
         /// Помощник записи в поток.
         /// </summary>
         private StreamWriter LogWriter { get; }
+
+        public void Dispose()
+        {
+            LogWriter.Dispose();
+            File.Dispose();
+        }
 
         public void Log(string LogText)
         {
@@ -56,17 +67,6 @@ namespace DiscordBot
                 Console.WriteLine(log);
                 LogWriter.WriteLine(log);
             });
-        }
-
-        public void Dispose()
-        {
-            LogWriter.Dispose();
-            File.Dispose();
-        }
-
-        ~DefaultLoger()
-        {
-            Dispose();
         }
     }
 }

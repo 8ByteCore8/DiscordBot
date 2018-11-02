@@ -3,7 +3,7 @@
 namespace DiscordBot.Common
 {
     /// <summary>
-    /// Класс определяющий команду и исполняющий её.
+    /// Класс определяющий команду.
     /// </summary>
     public interface IControler
     {

@@ -14,34 +14,6 @@ namespace DiscordBot
     public class DiscordBot : IDisposable
     {
         /// <summary>
-        /// Обект бота.
-        /// </summary>
-        private DiscordClient DiscordClient { get; }
-
-        /// <summary>
-        /// Логер текущего бота.
-        /// </summary>
-        public ILoger Loger { get; set; }
-
-        public IControler Controler { get; set; }
-
-        /// <summary>
-        /// Создаёт новый обьект бота.
-        /// </summary>
-        /// <param name="token">Токен для подключения.</param>
-        //public DiscordBot(string token)
-        //{
-        //    //проверка переданого токена
-        //    if (token == null) throw new ArgumentNullException(nameof(token));
-
-        //    //установка стандартного логера
-        //    Loger = new DefaultLoger();
-
-        //    //вызов инициализатора
-        //    Init(token);
-        //}
-
-        /// <summary>
         /// Создаёт новый обьект бота.
         /// </summary>
         /// <param name="token">Токен для подключения.</param>
@@ -61,16 +33,8 @@ namespace DiscordBot
             else
                 Controler = controler;
 
-            //вызов инициализатора
-            Init(token);
-        }
 
-        /// <summary>
-        /// Инициализирует бота и подключает его к серверу.
-        /// </summary>
-        /// <param name="token">Токен для подключения.</param>
-        private void Init(string token)
-        {
+
             //инициализация бота
             DiscordClient discord = new DiscordClient(new DiscordConfiguration
             {
@@ -106,6 +70,52 @@ namespace DiscordBot
             Dispose();
         }
 
+        public IControler Controler { get; set; }
+
+        /// <summary>
+        /// Логер текущего бота.
+        /// </summary>
+        public ILoger Loger { get; set; }
+
+        /// <summary>
+        /// Обект бота.
+        /// </summary>
+        private DiscordClient DiscordClient { get; }
+
+        /// <summary>
+        /// Метод для коректного завершения работы бота и освобождения ресурсов.
+        /// </summary>
+        public void Dispose()
+        {
+            if (DiscordClient != null)
+            {
+                DiscordClient.DisconnectAsync();
+                DiscordClient.Dispose();
+            }
+
+            if (Loger != null)
+                Loger.Dispose();
+
+            GC.Collect();
+        }
+
+        /// <summary>
+        /// Метод выполняющий команду в консольном режиме.
+        /// </summary>
+        /// <param name="text">Текст команды.</param>
+        public void Execute(string text)
+        {
+            try
+            {
+                ICommand command = Controler.Parse(text, CommandType.Console);
+                command.ExecuteAsConsole(DiscordClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
         //реакция на новое сообщение в дискорде
         private Task Discord_MessageCreated(MessageCreateEventArgs e)
         {
@@ -129,36 +139,6 @@ namespace DiscordBot
                     e.Message.RespondAsync(ex.Message);
                 }
             });
-        }
-
-        public void Execute(string text)
-        {
-            try
-            {
-                ICommand command = Controler.Parse(text, CommandType.Console);
-                command.ExecuteAsConsole(DiscordClient);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Метод для коректного завершения работы бота и освобождения ресурсов.
-        /// </summary>
-        public void Dispose()
-        {
-            if (DiscordClient != null)
-            {
-                DiscordClient.DisconnectAsync();
-                DiscordClient.Dispose();
-            }
-
-            if (Loger != null)
-                Loger.Dispose();
-
-            GC.Collect();
         }
     }
 }

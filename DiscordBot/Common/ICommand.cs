@@ -14,10 +14,13 @@ namespace DiscordBot.Common
         string[] Args { get; set; }
 
         /// <summary>
-        /// Действие команды.
+        /// Выполняет команду в режиме бота.
+        /// </summary>
+        void ExecuteAsBot(MessageCreateEventArgs message);
+
+        /// <summary>
+        /// Выполняет команду в консольном режиме.
         /// </summary>
         void ExecuteAsConsole(DiscordClient client);
-
-        void ExecuteAsBot(MessageCreateEventArgs message);
     }
 }

@@ -10,6 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace DiscordBot
 {
+    /// <summary>
+    /// Контролер по умолчанию.
+    /// </summary>
     class DefaultControler : IControler
     {
         static DefaultControler()
