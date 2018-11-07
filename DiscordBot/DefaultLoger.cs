@@ -9,7 +9,7 @@ namespace DiscordBot
     /// <summary>
     /// Логер по умолчанию
     /// </summary>
-    public class DefaultLoger : IDisposable, ILoger
+    class DefaultLoger : IDisposable, ILoger
     {
         /// <summary>
         /// Создаёт новый обьект класса.

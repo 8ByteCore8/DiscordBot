@@ -1,5 +1,4 @@
 ﻿using System;
-using DiscordBot;
 
 namespace DiscordBot_Core_
 {
