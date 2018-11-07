@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>ByteCore</Authors>
+    <Company />
+    <Description>Мини фраймворк для создания ботов для Дискорда на C#.</Description>
+    <RepositoryUrl>https://github.com/8ByteCore8/DiscordBot</RepositoryUrl>
+    <PackageTags>Discord bot</PackageTags>
+    <NeutralLanguage></NeutralLanguage>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>ByteCore.DiscordBot</PackageId>
+    <Copyright>© Кушнір Б.T. , 2018</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
