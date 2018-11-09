@@ -33,8 +33,6 @@ namespace DiscordBot
             else
                 Controler = controler;
 
-
-
             //инициализация бота
             DiscordClient discord = new DiscordClient(new DiscordConfiguration
             {
@@ -47,7 +45,7 @@ namespace DiscordBot
 
             discord.MessageCreated += Discord_MessageCreated;
 
-            #endregion
+            #endregion Обработчики событий
 
             //подключение бота к серверу
             try

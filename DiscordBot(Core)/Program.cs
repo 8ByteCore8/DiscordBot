@@ -2,9 +2,9 @@
 
 namespace DiscordBot_Core_
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             string token = null;
 

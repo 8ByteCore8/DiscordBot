@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace DiscordBot.Exceptions
 {
-    class ControlerException : Exception
+    internal class ControlerException : Exception
     {
         public ControlerException()
         {

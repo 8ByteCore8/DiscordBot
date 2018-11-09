@@ -13,7 +13,7 @@ namespace DiscordBot
     /// <summary>
     /// Контролер по умолчанию.
     /// </summary>
-    class DefaultControler : IControler
+    internal class DefaultControler : IControler
     {
         static DefaultControler()
         {
@@ -66,7 +66,6 @@ namespace DiscordBot
             ICommand command;
             try
             {
-
                 command = (ICommand)Activator.CreateInstance(Commands.FirstOrDefault(x =>
                 {
                     CommandAttribute attribute = x.GetCustomAttribute<CommandAttribute>();

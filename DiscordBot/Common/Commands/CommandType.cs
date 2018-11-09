@@ -12,6 +12,7 @@ namespace DiscordBot.Common.Commands
         /// Режим бота.
         /// </summary>
         Discord = 0b01,
+
         /// <summary>
         /// Консольный режим.
         /// </summary>
