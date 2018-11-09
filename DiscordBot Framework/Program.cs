@@ -1,4 +1,5 @@
 ﻿using System;
+using PocketLib;
 
 namespace DiscordBot_Framework
 {
