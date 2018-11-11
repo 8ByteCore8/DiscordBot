@@ -1,4 +1,6 @@
-﻿using DiscordBot.Common;
+﻿using DiscordBot.Attributes;
+using DiscordBot.Common;
+using DiscordBot.Exceptions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using System;
@@ -16,7 +18,7 @@ namespace DiscordBot
         /// </summary>
         /// <param name="token">Токен для подключения.</param>
         /// <param name="loger">Пользовательский класс для логирования.</param>
-        public DiscordBot(string token, ILoger loger = null, IControler controler = null)
+        public DiscordBot(string token, ILoger loger = null, ICommandManager controler = null)
         {
             if (token == null)
                 throw new ArgumentNullException(nameof(token));
@@ -27,9 +29,11 @@ namespace DiscordBot
                 Loger = loger;
 
             if (controler == null)
-                Controler = new DefaultControler();
+                CommandManager = new DefaultControler();
             else
-                Controler = controler;
+                CommandManager = controler;
+
+            CommandManager.LoadCommands();
 
             //инициализация бота
             DiscordClient discord = new DiscordClient(new DiscordConfiguration
@@ -52,7 +56,7 @@ namespace DiscordBot
             }
             catch (Exception ex)
             {
-                throw new BotException($"не удалось подключиться к дискорду.\nподробности: {ex.Message}", ex);
+                throw new BotException($"Не удалось подключиться к дискорду.\n\tподробности: {ex.Message}", ex);
             }
 
             Loger.Log($"Бот успешно подключён");
@@ -66,7 +70,7 @@ namespace DiscordBot
             Dispose();
         }
 
-        public IControler Controler { get; set; }
+        public ICommandManager CommandManager { get; set; }
 
         /// <summary>
         /// Логер текущего бота.
@@ -103,8 +107,8 @@ namespace DiscordBot
         {
             try
             {
-                ICommand command = Controler.Parse(text, CommandType.Console);
-                command.ExecuteAsConsole(DiscordClient);
+                ICommand command = CommandManager.Parse(text, CommandType.Console);
+                command.ExecuteAsConsole(this);
             }
             catch (Exception ex)
             {
@@ -126,7 +130,7 @@ namespace DiscordBot
 
                 try
                 {
-                    ICommand command = Controler.Parse(text, CommandType.Discord);
+                    ICommand command = CommandManager.Parse(text, CommandType.Discord);
 
                     command.ExecuteAsBot(e);
                 }

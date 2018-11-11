@@ -65,7 +65,7 @@ namespace DiscordBot
             return Task.Factory.StartNew(() =>
             {
                 DateTime time = DateTime.Now;
-                string log = $"[{time.ToShortDateString()} | {time.ToShortTimeString()}] --- {LogText}";
+                string log = $"[{time.ToShortDateString()} | {time.ToShortTimeString()}] --- {LogText}.";
                 Console.WriteLine(log);
                 LogWriter.WriteLine(log);
             });

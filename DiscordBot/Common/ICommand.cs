@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSharpPlus.EventArgs;
+using System;
 
 namespace DiscordBot.Common
 {
@@ -6,7 +7,7 @@ namespace DiscordBot.Common
     {
         string[] Args { get; set; }
 
-        void ExecuteAsBot(DSharpPlus.EventArgs.MessageCreateEventArgs message);
+        void ExecuteAsBot(MessageCreateEventArgs message);
 
         void ExecuteAsConsole(DiscordBot bot);
     }

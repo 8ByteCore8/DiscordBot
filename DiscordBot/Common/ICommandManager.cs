@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiscordBot.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace DiscordBot.Common
@@ -11,9 +12,11 @@ namespace DiscordBot.Common
 
         ICommand FindCommand(string module, string name);
 
+        ICommand FindCommand(string module, string name, CommandType type);
+
         void LoadCommands();
 
-        ICommand Parse(string commandText);
+        ICommand Parse(string commandText, CommandType type);
 
         void ReloadCommands();
     }

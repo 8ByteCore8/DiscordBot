@@ -3,6 +3,8 @@ using DiscordBot.Common;
 using DiscordBot.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -51,17 +53,35 @@ namespace DiscordBot
             return null;
         }
 
-        public void LoadCommands() => ReloadCommands();
+        public ICommand FindCommand(string module, string name, CommandType type)
+        {
+            foreach (Type temp in Commands)
+            {
+                CommandAttribute attribute = temp.GetCustomAttribute<CommandAttribute>();
+                if (attribute.Command == name && attribute.Module == module && attribute.Type.HasFlag(type))
+                    return (ICommand)Activator.CreateInstance(temp);
+            }
+            return null;
+        }
 
-        public ICommand Parse(string commandText)
+        public void LoadCommands()
+        {
+            string modulesDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
+            if (!Directory.Exists(modulesDir))
+                Directory.CreateDirectory(modulesDir);
+
+            ReloadCommands();
+        }
+
+        public ICommand Parse(string commandText, CommandType type)
         {
             Regex regex = new Regex(@"(\S+)\s(\S+)((?:\s\S+)*)");
             if (regex.IsMatch(commandText))
-                throw new Exceptions.CommandFormatException("Неверный формат команды");
+                throw new CommandFormatException("Неверный формат команды");
 
             GroupCollection groups = regex.Match(commandText).Groups;
 
-            ICommand command = FindCommand(groups[1].Value, groups[2].Value);
+            ICommand command = FindCommand(groups[1].Value, groups[2].Value, type);
 
             if (command == null)
                 throw new CommandNotFoundException("Введена неизвестная команда");
@@ -73,7 +93,26 @@ namespace DiscordBot
 
         public void ReloadCommands()
         {
-            throw new System.NotImplementedException();
+            string modulesDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
+
+            IEnumerable<string> modules = Directory.GetFiles(modulesDir).Where(x => Path.GetExtension(x) == "dll");
+
+            List<Type> commands = new List<Type>();
+
+            foreach (string module in modules)
+            {
+                try
+                {
+                    Type[] types = Assembly.LoadFile(module).GetTypes();
+
+                    foreach (Type type in types)
+                        if (typeof(ICommand).IsAssignableFrom(type) && type.IsClass)
+                            commands.Add(type);
+                }
+                catch { }
+            }
+
+            Commands = commands.ToArray();
         }
     }
 }
