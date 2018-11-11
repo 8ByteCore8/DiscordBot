@@ -1,6 +1,4 @@
 ﻿using DiscordBot.Common;
-using DiscordBot.Common.Commands;
-using DiscordBot.Exceptions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using System;

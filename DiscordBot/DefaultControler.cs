@@ -1,10 +1,8 @@
-﻿using DiscordBot.Common;
-using DiscordBot.Common.Commands;
+﻿using DiscordBot.Attributes;
+using DiscordBot.Common;
 using DiscordBot.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -13,73 +11,69 @@ namespace DiscordBot
     /// <summary>
     /// Контролер по умолчанию.
     /// </summary>
-    internal class DefaultControler : IControler
+    internal class DefaultControler : ICommandManager
     {
-        static DefaultControler()
+        private Type[] Commands { get; set; }
+
+        public void Dispose()
         {
-            string dirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Modules";
-
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-
-            LoadCommands();
+            Commands = null;
+            GC.Collect();
         }
 
-        public static Type[] Commands { get; private set; }
-
-        public static void LoadCommands()
+        public IEnumerable<ICommand> FindAllCommand(string name)
         {
-            List<Type> commands = new List<Type>();
-            string dirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Modules";
+            List<ICommand> commands = new List<ICommand>();
 
-            string[] files = Directory.GetFiles(dirPath);
-            foreach (string file in files)
-            {
-                try
-                {
-                    Type[] types = Assembly.LoadFile(file).GetExportedTypes();
-                    foreach (Type type in types)
-                    {
-                        if (typeof(ICommand).IsAssignableFrom(type) && type.IsClass)
-                            commands.Add(type);
-                    }
-                }
-                catch { }
-            }
-
-            Commands = commands.ToArray();
+            foreach (Type type in Commands)
+                if (type.GetCustomAttribute<CommandAttribute>().Command == name)
+                    commands.Add((ICommand)Activator.CreateInstance(type));
+            return commands;
         }
 
-        public ICommand Parse(string text, CommandType type)
+        public ICommand FindCommand(string module, string name)
         {
-            Regex regex = new Regex(@"^(\S+)\s(\S+)((?:\s\S+)*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-            if (!regex.IsMatch(text))
-                throw new ControlerException($"Комманда {text} имела неверный формат.");
-
-            GroupCollection groupCollection = regex.Match(text).Groups;
-
-            string module = groupCollection[1].Value;
-            string commandStr = groupCollection[2].Value;
-            string[] args = groupCollection[3].Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            ICommand command;
-            try
+            foreach (Type type in Commands)
             {
-                command = (ICommand)Activator.CreateInstance(Commands.FirstOrDefault(x =>
-                {
-                    CommandAttribute attribute = x.GetCustomAttribute<CommandAttribute>();
-                    return attribute.Module == module && attribute.Command == commandStr && attribute.Type.HasFlag(type);
-                }));
-
-                command.Args = args;
-
-                return command;
+                CommandAttribute attribute = type.GetCustomAttribute<CommandAttribute>();
+                if (attribute.Command == name && attribute.Module == module)
+                    return (ICommand)Activator.CreateInstance(type);
             }
-            catch
-            {
-                throw new ControlerException("Введена неизвестная команда.");
-            }
+            return null;
+        }
+
+        public ICommand FindCommand(string name)
+        {
+            foreach (Type type in Commands)
+                if (type.GetCustomAttribute<CommandAttribute>().Command == name)
+                    return (ICommand)Activator.CreateInstance(type);
+
+            return null;
+        }
+
+        public void LoadCommands() => ReloadCommands();
+
+        public ICommand Parse(string commandText)
+        {
+            Regex regex = new Regex(@"(\S+)\s(\S+)((?:\s\S+)*)");
+            if (regex.IsMatch(commandText))
+                throw new Exceptions.CommandFormatException("Неверный формат команды");
+
+            GroupCollection groups = regex.Match(commandText).Groups;
+
+            ICommand command = FindCommand(groups[1].Value, groups[2].Value);
+
+            if (command == null)
+                throw new CommandNotFoundException("Введена неизвестная команда");
+
+            command.Args = groups[3].Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return command;
+        }
+
+        public void ReloadCommands()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,26 +1,13 @@
-﻿using DSharpPlus;
-using DSharpPlus.EventArgs;
+﻿using System;
 
 namespace DiscordBot.Common
 {
-    /// <summary>
-    /// Команда которую исполняет бот.
-    /// </summary>
-    public interface ICommand
+    public interface ICommand : IDisposable
     {
-        /// <summary>
-        /// Аргументы команды.
-        /// </summary>
         string[] Args { get; set; }
 
-        /// <summary>
-        /// Выполняет команду в режиме бота.
-        /// </summary>
-        void ExecuteAsBot(MessageCreateEventArgs message);
+        void ExecuteAsBot(DSharpPlus.EventArgs.MessageCreateEventArgs message);
 
-        /// <summary>
-        /// Выполняет команду в консольном режиме.
-        /// </summary>
-        void ExecuteAsConsole(DiscordClient client);
+        void ExecuteAsConsole(DiscordBot bot);
     }
 }

@@ -14,7 +14,30 @@ namespace DiscordBot
         /// <summary>
         /// Создаёт новый обьект класса.
         /// </summary>
-        public DefaultLoger()
+        public DefaultLoger() => Init();
+
+        ~DefaultLoger()
+        {
+            Dispose();
+        }
+
+        /// <summary>
+        /// Поток файла
+        /// </summary>
+        private FileStream File { get; set; }
+
+        /// <summary>
+        /// Помощник записи в поток.
+        /// </summary>
+        private StreamWriter LogWriter { get; set; }
+
+        public void Dispose()
+        {
+            LogWriter.Dispose();
+            File.Dispose();
+        }
+
+        public void Init()
         {
             //путь к папке с логами
             string logDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Logs";
@@ -27,27 +50,6 @@ namespace DiscordBot
             File = new FileStream($"{logDir}\\{DateTime.Now.ToShortDateString()}.log", FileMode.Create);
             //создание помощника для записи в файл
             LogWriter = new StreamWriter(File);
-        }
-
-        ~DefaultLoger()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Поток файла
-        /// </summary>
-        private FileStream File { get; }
-
-        /// <summary>
-        /// Помощник записи в поток.
-        /// </summary>
-        private StreamWriter LogWriter { get; }
-
-        public void Dispose()
-        {
-            LogWriter.Dispose();
-            File.Dispose();
         }
 
         public void Log(string LogText)

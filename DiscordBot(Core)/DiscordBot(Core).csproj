@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ByteCore.DiscordBot" Version="1.0.0" />
+    <ProjectReference Include="..\DiscordBot\DiscordBot.csproj" />
   </ItemGroup>
 
 </Project>
