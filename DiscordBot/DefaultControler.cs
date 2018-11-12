@@ -41,7 +41,7 @@ namespace DiscordBot
             }
         }
 
-        private string ModulesPath { get; } = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
+        private string ModulesPath { get; } = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Modules";
 
         public void Dispose()
         {
