@@ -33,6 +33,8 @@ namespace DiscordBot
             else
                 CommandManager = controler;
 
+            CommandManager.Sturtup();
+
             CommandManager.LoadCommands();
 
             //инициализация бота

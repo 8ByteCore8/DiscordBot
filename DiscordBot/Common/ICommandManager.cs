@@ -19,5 +19,7 @@ namespace DiscordBot.Common
         ICommand Parse(string commandText, CommandType type);
 
         void ReloadCommands();
+
+        void Sturtup();
     }
 }

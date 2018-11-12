@@ -15,7 +15,33 @@ namespace DiscordBot
     /// </summary>
     internal class DefaultControler : ICommandManager
     {
-        private Type[] Commands { get; set; }
+        private Type[] _commands;
+
+        private Assembly[] _modules;
+
+        public DefaultControler() => AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+        private Type[] Commands
+        {
+            get => _commands;
+            set
+            {
+                _commands = value;
+                Console.WriteLine($"Загружено команд: {_commands.Length}.");
+            }
+        }
+
+        private Assembly[] Modules
+        {
+            get => _modules;
+            set
+            {
+                _modules = value;
+                Console.WriteLine($"Загружено модулей: {_modules.Length}.");
+            }
+        }
+
+        private string ModulesPath { get; } = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
 
         public void Dispose()
         {
@@ -64,19 +90,12 @@ namespace DiscordBot
             return null;
         }
 
-        public void LoadCommands()
-        {
-            string modulesDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
-            if (!Directory.Exists(modulesDir))
-                Directory.CreateDirectory(modulesDir);
-
-            ReloadCommands();
-        }
+        public void LoadCommands() => ReloadCommands();
 
         public ICommand Parse(string commandText, CommandType type)
         {
-            Regex regex = new Regex(@"(\S+)\s(\S+)((?:\s\S+)*)");
-            if (regex.IsMatch(commandText))
+            Regex regex = new Regex(@"^(\S+)\s(\S+)((?:\s\S+)*)$");
+            if (!regex.IsMatch(commandText))
                 throw new CommandFormatException("Неверный формат команды");
 
             GroupCollection groups = regex.Match(commandText).Groups;
@@ -93,26 +112,51 @@ namespace DiscordBot
 
         public void ReloadCommands()
         {
-            string modulesDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}//Modules";
-
-            IEnumerable<string> modules = Directory.GetFiles(modulesDir).Where(x => Path.GetExtension(x) == "dll");
+            IEnumerable<string> modules = Directory.GetFiles(ModulesPath).Where(x => Path.GetExtension(x) == ".dll");
 
             List<Type> commands = new List<Type>();
 
-            foreach (string module in modules)
+            foreach (Assembly module in Modules)
             {
-                try
-                {
-                    Type[] types = Assembly.LoadFile(module).GetTypes();
+                Type[] types = module.GetTypes();
 
-                    foreach (Type type in types)
-                        if (typeof(ICommand).IsAssignableFrom(type) && type.IsClass)
-                            commands.Add(type);
-                }
-                catch { }
+                foreach (Type type in types)
+                    if (typeof(ICommand).IsAssignableFrom(type) && type.IsClass)
+                        commands.Add(type);
             }
 
             Commands = commands.ToArray();
         }
+
+        public void Sturtup()
+        {
+            if (!Directory.Exists(ModulesPath))
+                Directory.CreateDirectory(ModulesPath);
+
+            IEnumerable<string> modulesPath = Directory.GetFiles(ModulesPath).Where(x => Path.GetExtension(x) == ".dll");
+
+            List<Assembly> modules = new List<Assembly>();
+
+            foreach (string module in modulesPath)
+            {
+                try
+                {
+                    Assembly assembly = Assembly.LoadFile(module);
+
+                    Type[] types = assembly.GetTypes();
+
+                    foreach (Type type in types)
+                        if (typeof(IStartup).IsAssignableFrom(type) && type.IsClass)
+                            ((IStartup)Activator.CreateInstance(type)).Sturtup();
+
+                    modules.Add(assembly);
+                }
+                catch { }
+            }
+
+            Modules = modules.ToArray();
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) => Modules.FirstOrDefault(x => x.FullName == args.Name);
     }
 }

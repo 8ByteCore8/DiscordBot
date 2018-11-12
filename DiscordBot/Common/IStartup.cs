@@ -1,6 +1,6 @@
 ﻿namespace DiscordBot.Common
 {
-    internal interface IStartup
+    public interface IStartup
     {
         void Sturtup();
     }
