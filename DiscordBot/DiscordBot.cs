@@ -176,17 +176,20 @@ namespace DiscordBot
                     return;
 
                 string text = e.Message.Content.Trim();
-
-                if (!text.ToLower().StartsWith("!bot") || e.Message.Author.IsBot)
+                if (e.Message.Author.IsBot)
                     return;
 
-                text = text.Replace("!bot ", "");
+                if (text.ToLower().StartsWith("!bot "))
+                    text = text.Replace("!bot ", "");
+                else if (text.StartsWith(Mention))
+                    text = text.Replace(Mention, "").Trim();
+                else
+                    return;
 
                 try
                 {
-                    ICommand command = CommandManager.Parse(text, CommandType.Discord);
-
-                    command.ExecuteAsBot(e.Message);
+                    using (ICommand command = CommandManager.Parse(text, CommandType.Discord))
+                        command.ExecuteAsBot(e.Message);
                 }
                 catch (Exception ex)
                 {

@@ -5,7 +5,7 @@ namespace DiscordBot.Attributes
     [Flags]
     public enum CommandType
     {
-        Discord,
-        Console
+        Discord = 1,
+        Console = 2
     }
 }
