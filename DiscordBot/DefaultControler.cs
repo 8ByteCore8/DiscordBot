@@ -71,7 +71,7 @@ namespace DiscordBot
 
             ICommand command = FindCommand(parts[0], type);
 
-            if (command == null)
+            if (command is null)
                 throw new CommandNotFoundException("Введена неизвестная команда");
 
             parts.RemoveAt(0);

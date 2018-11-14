@@ -48,7 +48,7 @@ namespace DiscordBot
             #region Обработчики событий
 
             discord.MessageCreated += Discord_MessageCreated;
-            //discord.MessageUpdated += Discord_MessageUpdated;
+            discord.MessageUpdated += Discord_MessageUpdated;
 
             #endregion Обработчики событий
 
@@ -56,6 +56,7 @@ namespace DiscordBot
             try
             {
                 discord.ConnectAsync().Wait();
+                Mention = discord.CurrentUser.Mention;
             }
             catch (Exception ex)
             {
@@ -64,30 +65,6 @@ namespace DiscordBot
 
             Loger.Log($"Бот успешно подключён");
         }
-
-        //private Task Discord_MessageUpdated(MessageUpdateEventArgs e)
-        //{
-        //    return Task.Factory.StartNew(() =>
-        //    {
-        //        string text = e.Message.Content.Trim();
-
-        //        if (!text.ToLower().StartsWith("!bot") || e.Message.Author.IsBot)
-        //            return;
-
-        //        text = text.Replace("!bot ", "");
-
-        //        try
-        //        {
-        //            ICommand command = CommandManager.Parse(text, CommandType.Discord);
-
-        //            command.ExecuteAsBot(e);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            e.Message.RespondAsync(ex.Message);
-        //        }
-        //    });
-        //}
 
         /// <summary>
         /// Деструктор
@@ -108,6 +85,8 @@ namespace DiscordBot
         /// Обект бота.
         /// </summary>
         private DiscordClient DiscordClient { get; }
+
+        private string Mention { get; set; }
 
         /// <summary>
         /// Метод для коректного завершения работы бота и освобождения ресурсов.
@@ -134,8 +113,8 @@ namespace DiscordBot
         {
             try
             {
-                ICommand command = CommandManager.Parse(text.Trim(), CommandType.Console);
-                command.ExecuteAsConsole(this);
+                using (ICommand command = CommandManager.Parse(text.Trim(), CommandType.Console))
+                    command.ExecuteAsConsole(this);
             }
             catch (Exception ex)
             {
@@ -143,8 +122,37 @@ namespace DiscordBot
             }
         }
 
+        public void Stop() => Environment.Exit(0);
+
         //реакция на новое сообщение в дискорде
         private Task Discord_MessageCreated(MessageCreateEventArgs e)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                string text = e.Message.Content.Trim();
+                if (e.Message.Author.IsBot)
+                    return;
+
+                if (text.ToLower().StartsWith("!bot "))
+                    text = text.Replace("!bot ", "");
+                else if (text.StartsWith(Mention))
+                    text = text.Replace(Mention, "").Trim();
+                else
+                    return;
+
+                try
+                {
+                    using (ICommand command = CommandManager.Parse(text, CommandType.Discord))
+                        command.ExecuteAsBot(e.Message);
+                }
+                catch (Exception ex)
+                {
+                    e.Message.RespondAsync(ex.Message);
+                }
+            });
+        }
+
+        private Task Discord_MessageUpdated(MessageUpdateEventArgs e)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -159,7 +167,7 @@ namespace DiscordBot
                 {
                     ICommand command = CommandManager.Parse(text, CommandType.Discord);
 
-                    command.ExecuteAsBot(e);
+                    command.ExecuteAsBot(e.Message);
                 }
                 catch (Exception ex)
                 {

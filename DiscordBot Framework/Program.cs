@@ -20,17 +20,16 @@ namespace DiscordBot_Framework
                 token = Console.ReadLine();
             }
 
-            using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token))
+            try
             {
-                while (true)
-                {
-                    string commant = Console.ReadLine().ToLower().Trim();
-
-                    if (commant == "exit")
-                        break;
-                    else
-                        bot.Execute(commant);
-                }
+                using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token))
+                    while (true)
+                        bot.Execute(Console.ReadLine().Trim());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
         }
     }
