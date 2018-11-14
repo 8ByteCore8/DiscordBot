@@ -12,13 +12,13 @@ namespace DiscordBot
     /// <summary>
     /// Контролер по умолчанию.
     /// </summary>
-    internal class DefaultControler : ICommandManager
+    internal class DefaultManager : ICommandManager
     {
         private Type[] _commands;
 
         private Assembly[] _modules;
 
-        public DefaultControler() => AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        public DefaultManager() => AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
         private Type[] Commands
         {

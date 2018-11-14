@@ -21,17 +21,8 @@ namespace DiscordBot_Core_
             }
 
             using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token))
-            {
                 while (true)
-                {
-                    string commant = Console.ReadLine().ToLower().Trim();
-
-                    if (commant == "exit")
-                        break;
-                    else
-                        bot.Execute(commant);
-                }
-            }
+                        bot.Execute(Console.ReadLine().Trim());
         }
     }
 }

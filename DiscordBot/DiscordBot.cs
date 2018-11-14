@@ -29,7 +29,7 @@ namespace DiscordBot
                 Loger = loger;
 
             if (controler == null)
-                CommandManager = new DefaultControler();
+                CommandManager = new DefaultManager();
             else
                 CommandManager = controler;
 
@@ -84,7 +84,7 @@ namespace DiscordBot
         /// <summary>
         /// Обект бота.
         /// </summary>
-        private DiscordClient DiscordClient { get; }
+        public DiscordClient DiscordClient { get; }
 
         private string Mention { get; set; }
 
@@ -122,9 +122,20 @@ namespace DiscordBot
             }
         }
 
-        public void Stop() => Environment.Exit(0);
+        /// <summary>
+        /// Коректно завершает работу бота с последующим закрытием программы.
+        /// </summary>
+        public void Stop()
+        {
+            Dispose();
+            Environment.Exit(0);
+        }
 
-        //реакция на новое сообщение в дискорде
+        /// <summary>
+        /// Реакция на новое сообщение.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private Task Discord_MessageCreated(MessageCreateEventArgs e)
         {
             return Task.Factory.StartNew(() =>
@@ -152,10 +163,18 @@ namespace DiscordBot
             });
         }
 
+        /// <summary>
+        /// Реация на обновление сообщения.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private Task Discord_MessageUpdated(MessageUpdateEventArgs e)
         {
             return Task.Factory.StartNew(() =>
             {
+                if (DateTimeOffset.Now - e.Message.CreationTimestamp > new TimeSpan(1, 0, 0))
+                    return;
+
                 string text = e.Message.Content.Trim();
 
                 if (!text.ToLower().StartsWith("!bot") || e.Message.Author.IsBot)
