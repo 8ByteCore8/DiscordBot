@@ -48,6 +48,7 @@ namespace DiscordBot
             #region Обработчики событий
 
             discord.MessageCreated += Discord_MessageCreated;
+            //discord.MessageUpdated += Discord_MessageUpdated;
 
             #endregion Обработчики событий
 
@@ -63,6 +64,30 @@ namespace DiscordBot
 
             Loger.Log($"Бот успешно подключён");
         }
+
+        //private Task Discord_MessageUpdated(MessageUpdateEventArgs e)
+        //{
+        //    return Task.Factory.StartNew(() =>
+        //    {
+        //        string text = e.Message.Content.Trim();
+
+        //        if (!text.ToLower().StartsWith("!bot") || e.Message.Author.IsBot)
+        //            return;
+
+        //        text = text.Replace("!bot ", "");
+
+        //        try
+        //        {
+        //            ICommand command = CommandManager.Parse(text, CommandType.Discord);
+
+        //            command.ExecuteAsBot(e);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            e.Message.RespondAsync(ex.Message);
+        //        }
+        //    });
+        //}
 
         /// <summary>
         /// Деструктор
@@ -109,7 +134,7 @@ namespace DiscordBot
         {
             try
             {
-                ICommand command = CommandManager.Parse(text, CommandType.Console);
+                ICommand command = CommandManager.Parse(text.Trim(), CommandType.Console);
                 command.ExecuteAsConsole(this);
             }
             catch (Exception ex)
@@ -123,9 +148,9 @@ namespace DiscordBot
         {
             return Task.Factory.StartNew(() =>
             {
-                string text = e.Message.Content.Trim().ToLower();
+                string text = e.Message.Content.Trim();
 
-                if (!text.StartsWith("!bot") || e.Message.Author.IsBot)
+                if (!text.ToLower().StartsWith("!bot") || e.Message.Author.IsBot)
                     return;
 
                 text = text.Replace("!bot ", "");
