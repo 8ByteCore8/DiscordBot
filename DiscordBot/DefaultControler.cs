@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace DiscordBot
 {
@@ -49,63 +48,35 @@ namespace DiscordBot
             GC.Collect();
         }
 
-        public IEnumerable<ICommand> FindAllCommand(string name)
+        public ICommand FindCommand(string commandName, CommandType type)
         {
-            List<ICommand> commands = new List<ICommand>();
-
-            foreach (Type type in Commands)
-                if (type.GetCustomAttribute<CommandAttribute>().Command == name)
-                    commands.Add((ICommand)Activator.CreateInstance(type));
-            return commands;
-        }
-
-        public ICommand FindCommand(string module, string name)
-        {
-            foreach (Type type in Commands)
+            foreach (Type command in Commands)
             {
-                CommandAttribute attribute = type.GetCustomAttribute<CommandAttribute>();
-                if (attribute.Command == name && attribute.Module == module)
-                    return (ICommand)Activator.CreateInstance(type);
-            }
-            return null;
-        }
-
-        public ICommand FindCommand(string name)
-        {
-            foreach (Type type in Commands)
-                if (type.GetCustomAttribute<CommandAttribute>().Command == name)
-                    return (ICommand)Activator.CreateInstance(type);
-
-            return null;
-        }
-
-        public ICommand FindCommand(string module, string name, CommandType type)
-        {
-            foreach (Type temp in Commands)
-            {
-                CommandAttribute attribute = temp.GetCustomAttribute<CommandAttribute>();
-                if (attribute.Command == name && attribute.Module == module && attribute.Type.HasFlag(type))
-                    return (ICommand)Activator.CreateInstance(temp);
+                CommandAttribute attribute = command.GetCustomAttribute<CommandAttribute>();
+                if (attribute.Name == commandName && attribute.Type.HasFlag(type))
+                    return (ICommand)Activator.CreateInstance(command);
             }
             return null;
         }
 
         public void LoadCommands() => ReloadCommands();
 
-        public ICommand Parse(string commandText, CommandType type)
+        public ICommand Parse(string text, CommandType type)
         {
-            Regex regex = new Regex(@"^(\S+)\s(\S+)((?:\s\S+)*)$");
-            if (!regex.IsMatch(commandText))
+            List<string> parts = new List<string>();
+            parts.AddRange(text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            if (parts.Count == 0)
                 throw new CommandFormatException("Неверный формат команды");
 
-            GroupCollection groups = regex.Match(commandText).Groups;
-
-            ICommand command = FindCommand(groups[1].Value, groups[2].Value, type);
+            ICommand command = FindCommand(parts[0], type);
 
             if (command == null)
                 throw new CommandNotFoundException("Введена неизвестная команда");
 
-            command.Args = groups[3].Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            parts.RemoveAt(0);
+
+            command.Args = parts.ToArray();
 
             return command;
         }
