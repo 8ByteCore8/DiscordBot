@@ -1,7 +1,10 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
 using DiscordBot.Attributes;
 using DiscordBot.Common;
 using DiscordBot.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -36,12 +39,22 @@ namespace DiscordBot
 
             CommandManager.LoadCommands();
 
-            //инициализация бота
+            //инициализация ботa
+
             DiscordClient = new DiscordSocketClient();
+
+            CommandService command = new CommandService();
+
+            IServiceProvider provider = new ServiceCollection()
+                .AddSingleton(DiscordClient)
+                .AddSingleton(command)
+                .BuildServiceProvider();
+
+            DiscordClient.LoginAsync(TokenType.Bot, token);
 
             #region Обработчики событий
 
-            DiscordClient.MessageReceived += DiscordClient_MessageReceived; ;
+            DiscordClient.MessageReceived += DiscordClient_MessageReceived;
             DiscordClient.MessageUpdated += DiscordClient_MessageUpdated; ;
 
             #endregion Обработчики событий
@@ -49,7 +62,6 @@ namespace DiscordBot
             //подключение бота к серверу
             try
             {
-                DiscordClient.LoginAsync(Discord.TokenType.Bot, token).Wait();
                 DiscordClient.StartAsync().Wait();
                 Mention = DiscordClient.CurrentUser.Mention;
             }
@@ -154,7 +166,7 @@ namespace DiscordBot
             });
         }
 
-        private Task DiscordClient_MessageUpdated(Discord.Cacheable<Discord.IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
+        private Task DiscordClient_MessageUpdated(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
         {
             return Task.Factory.StartNew(() =>
             {

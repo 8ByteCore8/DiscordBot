@@ -12,13 +12,14 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>ByteCore.DiscordBot</PackageId>
     <Copyright>© Кушнір Б.T. , 2018</Copyright>
-    <Version>1.0.3.2</Version>
-    <AssemblyVersion>1.0.3.2</AssemblyVersion>
-    <FileVersion>1.0.3.2</FileVersion>
+    <Version>1.0.3.3</Version>
+    <AssemblyVersion>1.0.3.3</AssemblyVersion>
+    <FileVersion>1.0.3.3</FileVersion>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="3.2.3" />
+    <PackageReference Include="Discord.Net" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

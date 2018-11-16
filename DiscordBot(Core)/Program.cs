@@ -22,7 +22,7 @@ namespace DiscordBot_Core_
 
             using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token))
                 while (true)
-                        bot.Execute(Console.ReadLine().Trim());
+                    bot.Execute(Console.ReadLine().Trim());
         }
     }
 }
