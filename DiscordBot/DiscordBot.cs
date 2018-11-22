@@ -1,7 +1,9 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using DiscordBot.Attributes;
 using DiscordBot.Common;
 using DiscordBot.Exceptions;
+using System.Reflection;
 using System;
 using System.Threading.Tasks;
 
@@ -17,21 +19,58 @@ namespace DiscordBot
         /// </summary>
         /// <param name="token">Токен для подключения.</param>
         /// <param name="loger">Пользовательский класс для логирования.</param>
-        public DiscordBot(string token, ILoger loger = null, ICommandManager controler = null)
+        public DiscordBot(string token, ILoger loger = null, ICommandManager commandManager = null)
         {
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
                 throw new ArgumentNullException(nameof(token));
 
-            if (loger == null)
+
+
+            Loger = loger;
+            CommandManager = commandManager;
+
+
+
+            if (Loger is null)
                 Loger = new DefaultLoger();
-            else
-                Loger = loger;
 
-            if (controler == null)
+            if (CommandManager is null)
                 CommandManager = new DefaultManager();
-            else
-                CommandManager = controler;
 
+
+
+            Init(token);
+        }
+
+        public DiscordBot(IBotConfigurations botConfigurations)
+        {
+            if (botConfigurations == null)
+                throw new ArgumentNullException(nameof(botConfigurations));
+
+            if (string.IsNullOrEmpty(botConfigurations.Token))
+                throw new ArgumentNullException(nameof(botConfigurations.Token));
+
+
+
+            Loger = botConfigurations.Loger;
+            CommandManager = botConfigurations.CommandManager;
+            HiPeople = botConfigurations.HiPeople;
+
+
+
+            if (Loger is null)
+                Loger = new DefaultLoger();
+
+            if (CommandManager is null)
+                CommandManager = new DefaultManager();
+
+
+
+            Init(botConfigurations.Token);
+        }
+
+        private void Init(string token)
+        {
             CommandManager.Sturtup();
 
             CommandManager.LoadCommands();
@@ -41,22 +80,33 @@ namespace DiscordBot
 
             #region Обработчики событий
 
-            DiscordClient.MessageReceived += DiscordClient_MessageReceived; ;
-            DiscordClient.MessageUpdated += DiscordClient_MessageUpdated; ;
+            DiscordClient.MessageReceived += DiscordClient_MessageReceived;
+            DiscordClient.MessageUpdated += DiscordClient_MessageUpdated;
+            //DiscordClient.Connected += () =>
+            //{
+            //    return Task.Factory.StartNew(() =>
+            //    {
+            //        if (!string.IsNullOrEmpty(HiPeople))
+            //            foreach (var chanel in DiscordClient.DMChannels)
+            //                chanel.SendMessageAsync(HiPeople);
+            //    });
+            //};
 
             #endregion Обработчики событий
 
             //подключение бота к серверу
             try
             {
-                DiscordClient.LoginAsync(Discord.TokenType.Bot, token).Wait();
+                DiscordClient.LoginAsync(TokenType.Bot, token).Wait();
                 DiscordClient.StartAsync().Wait();
-                Mention = DiscordClient.CurrentUser.Mention;
             }
             catch (Exception ex)
             {
                 throw new BotException($"Не удалось подключиться к дискорду.\n\tподробности: {ex.Message}", ex);
             }
+
+            if (DiscordClient.CurrentUser != null)
+                Mention = DiscordClient.CurrentUser.Mention;
 
             Loger.Log($"Бот успешно подключён");
         }
@@ -74,13 +124,15 @@ namespace DiscordBot
         /// <summary>
         /// Обект бота.
         /// </summary>
-        public DiscordSocketClient DiscordClient { get; }
+        public DiscordSocketClient DiscordClient { get; private set; }
 
         /// <summary>
         /// Логер текущего бота.
         /// </summary>
         public ILoger Loger { get; set; }
 
+        public string HiPeople { get; set; }
+        
         private string Mention { get; set; }
 
         /// <summary>
@@ -135,8 +187,8 @@ namespace DiscordBot
                 if (arg.Author.IsBot)
                     return;
 
-                if (text.ToLower().StartsWith("!bot "))
-                    text = text.Replace("!bot ", "");
+                if (text.ToLower().StartsWith("!bot"))
+                    text = text.Replace("!bot", "").Trim();
                 else if (text.StartsWith(Mention))
                     text = text.Replace(Mention, "").Trim();
                 else

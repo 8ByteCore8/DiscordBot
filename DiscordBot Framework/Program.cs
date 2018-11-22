@@ -22,7 +22,7 @@ namespace DiscordBot_Framework
 
             try
             {
-                using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token))
+                using (DiscordBot.DiscordBot bot = new DiscordBot.DiscordBot(token) { HiPeople = "Всем привет! Я к вашим услугам!" })
                     while (true)
                         bot.Execute(Console.ReadLine().Trim());
             }
